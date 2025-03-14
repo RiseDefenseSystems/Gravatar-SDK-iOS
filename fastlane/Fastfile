@@ -81,8 +81,9 @@ platform :ios do
   end
 
   desc 'Builds the demo app from the given scheme for distribution'
-  lane :build_demo_for_distribution do |scheme:, build_number:|
-    UI.user_error! 'Please pass a build number by calling the lane with build_number:VALUE' if build_number.nil? || build_number.empty?
+  lane :build_demo_for_distribution do |scheme:|
+    pr_or_branch = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)&.then { |num| "PR ##{num}" } || ENV.fetch('BUILDKITE_BRANCH', nil)
+    build_number = ENV.fetch('BUILDKITE_BUILD_NUMBER', '0')
 
     build_app(
       project: XCODEPROJ_PATH,
@@ -91,6 +92,7 @@ platform :ios do
       export_method: 'enterprise',
       output_directory: ARTIFACTS_FOLDER,
       xcargs: [
+        "MARKETING_VERSION=#{pr_or_branch}",
         "CURRENT_PROJECT_VERSION=#{build_number}",
         *COMMON_XCARGS
       ]
@@ -98,7 +100,7 @@ platform :ios do
   end
 
   desc 'Upload the demo app to Firebase App Distribution'
-  lane :upload_demo_to_firebase do |build_number:|
+  lane :upload_demo_to_firebase do
     EnvManager.require_env_vars!('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY')
 
     release_notes = <<~NOTES

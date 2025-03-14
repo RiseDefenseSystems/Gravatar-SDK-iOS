@@ -103,7 +103,7 @@ steps:
         command: |
           install_gems
           install_swiftpm_dependencies --project "Demo/Gravatar-Demo.xcodeproj"
-          BUILD_NUMBER=$BUILDKITE_BUILD_NUMBER make build-demo-for-distribution
+          make build-demo-for-distribution
         artifact_paths:
           - ".build/artifacts/*.ipa"
           - ".build/artifacts/*.dSYM.zip"
