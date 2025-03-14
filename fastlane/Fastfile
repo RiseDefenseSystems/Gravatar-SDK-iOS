@@ -109,6 +109,7 @@ platform :ios do
 
     firebase_app_distribution(
       app: FIREBASE_APP_ID,
+      ipa_path: File.join(ARTIFACTS_FOLDER, 'Gravatar Demo.ipa'),
       service_credentials_json_data: EnvManager.get_required_env!('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY'),
       release_notes: release_notes,
       groups: FIREBASE_TESTERS_GROUP
