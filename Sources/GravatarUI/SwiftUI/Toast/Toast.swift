@@ -50,7 +50,7 @@ struct Toast: View {
         })
         .zIndex(1)
         .accessibilityFocused($focus)
-        .onAppear() {
+        .onAppear {
             if toast.type == .error {
                 focus = true
             }

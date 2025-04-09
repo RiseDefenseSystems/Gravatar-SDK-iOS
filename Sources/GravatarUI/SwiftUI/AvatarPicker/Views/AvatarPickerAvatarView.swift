@@ -184,13 +184,13 @@ extension AvatarRating {
     }
 }
 
-private extension String {
-    static let accessibilityAvatarHint = SDKLocalizedString(
+extension String {
+    fileprivate static let accessibilityAvatarHint = SDKLocalizedString(
         "Avatar.Accessibility.AvatarButton.Hint",
         value: "Double tap to select avatar",
         comment: "Hint spoken outloud by VoiceOver when an avatar is selected"
     )
-    static let accessibilityAvatarOptionsLabel = SDKLocalizedString(
+    fileprivate static let accessibilityAvatarOptionsLabel = SDKLocalizedString(
         "Avatar.Accessibility.AvatarButton.OptionsLabel",
         value: "Avatar options",
         comment: "Accessibility label spoken outloud by VoiceOver when the avatar options button is selected"
