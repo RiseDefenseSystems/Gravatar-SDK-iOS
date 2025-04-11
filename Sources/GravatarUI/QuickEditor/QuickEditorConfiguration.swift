@@ -2,16 +2,16 @@ import UIKit
 
 public class QuickEditorConfiguration {
     let interfaceStyle: UIUserInterfaceStyle
-    let customImageEditorFactory: CustomImageEditorControllerFactory?
+    let customImageEditorProvider: CustomImageEditorControllerProvider?
 
     static var `default`: QuickEditorConfiguration { .init() }
 
     public init(
         interfaceStyle: UIUserInterfaceStyle? = nil,
-        customImageEditorFactory: CustomImageEditorControllerFactory? = nil
+        customImageEditorProvider: CustomImageEditorControllerProvider? = nil
     ) {
         self.interfaceStyle = interfaceStyle ?? .unspecified
-        self.customImageEditorFactory = customImageEditorFactory
+        self.customImageEditorProvider = customImageEditorProvider
     }
 }
 

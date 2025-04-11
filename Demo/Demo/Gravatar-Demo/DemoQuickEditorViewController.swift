@@ -199,7 +199,7 @@ final class DemoQuickEditorViewController: UIViewController {
     func presentQuickEditor() {
         guard let email = emailField.text else { return }
         savedEmail = email
-        let imageEditorFactory: CustomImageEditorControllerFactory? = {
+        let imageEditorProvider: CustomImageEditorControllerProvider? = {
             if self.useCustomImageEditor {
                 return { image, callback in
                     return MyCustomImageEditorController(inputImage: image, editingDidFinish: callback)
@@ -214,7 +214,7 @@ final class DemoQuickEditorViewController: UIViewController {
             scope: .avatarPicker(AvatarPickerConfiguration(contentLayout: selectedLayout.contentLayout)),
             configuration: .init(
                 interfaceStyle: customColorScheme,
-                customImageEditorFactory: imageEditorFactory
+                customImageEditorProvider: imageEditorProvider
             ),
             token: token
         )

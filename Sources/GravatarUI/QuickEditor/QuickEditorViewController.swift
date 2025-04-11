@@ -1,10 +1,10 @@
 import SwiftUI
 import UIKit
 
-public typealias CustomImageEditorControllerFactory = (UIImage, @escaping @Sendable (UIImage) -> Void) -> CustomImageEditorController
+public typealias CustomImageEditorControllerProvider = (UIImage, @escaping @Sendable (UIImage) -> Void) -> CustomImageEditorController
 
 final class QuickEditorViewController: UIViewController, ModalPresentationWithIntrinsicSize {
-    private typealias CustomFactory = ImageEditorBlock<CustomImageEditorControllerRepresentable>?
+    private typealias CustomImageEditorProvider = ImageEditorBlock<CustomImageEditorControllerRepresentable>?
 
     let email: Email
     let scope: QuickEditorScope
@@ -33,10 +33,10 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
     }
 
     private lazy var rootView: QuickEditor = {
-        let factory: CustomFactory = if let customFactory = configuration.customImageEditorFactory {
+        let provider: CustomImageEditorProvider = if let customProvider = configuration.customImageEditorProvider {
             { image, callback in
                 CustomImageEditorControllerRepresentable(
-                    controllerFactory: customFactory,
+                    controllerProvider: customProvider,
                     inputImage: image,
                     editingDidFinish: callback
                 )
@@ -50,7 +50,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
             scope: scope.scopeType,
             token: token,
             isPresented: isPresented,
-            customImageEditor: factory,
+            customImageEditor: provider,
             contentLayoutProvider: contentLayoutWithPresentation,
             avatarUpdatedHandler: onAvatarUpdated
         )
@@ -229,20 +229,20 @@ private struct CustomImageEditorControllerRepresentable: UIViewControllerReprese
     var inputImage: UIImage
     var editingDidFinish: @Sendable (UIImage) -> Void
 
-    let controllerFactory: CustomImageEditorControllerFactory
+    let controllerProvider: CustomImageEditorControllerProvider
 
     init(
-        controllerFactory: @escaping CustomImageEditorControllerFactory,
+        controllerProvider: @escaping CustomImageEditorControllerProvider,
         inputImage: UIImage,
         editingDidFinish: @escaping @Sendable (UIImage) -> Void
     ) {
-        self.controllerFactory = controllerFactory
+        self.controllerProvider = controllerProvider
         self.inputImage = inputImage
         self.editingDidFinish = editingDidFinish
     }
 
     func makeUIViewController(context: Context) -> UIViewController {
-        controllerFactory(inputImage, editingDidFinish)
+        controllerProvider(inputImage, editingDidFinish)
     }
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
