@@ -216,13 +216,6 @@ public struct QuickEditorPresenter {
 public protocol CustomImageEditorController: UIViewController {
     var inputImage: UIImage { get }
     var editingDidFinish: @Sendable (UIImage) -> Void { get }
-
-    init(
-        nibName nibNameOrNil: String?,
-        bundle nibBundleOrNil: Bundle?,
-        inputImage: UIImage,
-        editingDidFinish: @Sendable @escaping (UIImage) -> Void
-    )
 }
 
 private struct CustomImageEditorControllerRepresentable: UIViewControllerRepresentable, ImageEditorView {
