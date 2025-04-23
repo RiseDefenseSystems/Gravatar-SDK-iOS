@@ -377,7 +377,7 @@ class AvatarPickerViewModel: ObservableObject {
     func update(altText: String, for avatar: AvatarImageModel) async -> Bool {
         guard let token = self.authToken else { return false }
         do {
-            let updatedAvatar = try await avatarService.update(altText: altText, avatarID: .hashID(avatar.id), accessToken: token)
+            let updatedAvatar = try await avatarService.updateAvatar(avatarID: avatar.id, accessToken: token, altText: altText)
             withAnimation {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
             }
@@ -400,10 +400,10 @@ class AvatarPickerViewModel: ObservableObject {
         guard let authToken else { return false }
 
         do {
-            let updatedAvatar = try await avatarService.update(
-                rating: rating,
-                avatarID: .hashID(avatar.id),
-                accessToken: authToken
+            let updatedAvatar = try await avatarService.updateAvatar(
+                avatarID: avatar.id,
+                accessToken: authToken,
+                rating: rating.toRating()
             )
             toastManager.showToast(Localized.avatarRatingUpdateSuccess, type: .info)
             withAnimation {
@@ -544,13 +544,13 @@ extension Result<[AvatarImageModel], Error> {
 }
 
 extension AvatarImageModel {
-    init(with avatar: Avatar) {
-        id = avatar.id
+    init(with avatar: AvatarDetails) {
+        id = avatar.imageID
         let avatarGridItemSize = Int(AvatarGridConstants.maxAvatarWidth * UITraitCollection.current.displayScale)
         source = .remote(url: avatar.url(withSize: String(avatarGridItemSize)))
         state = .loaded
         isSelected = avatar.isSelected
         altText = avatar.altText
-        rating = avatar.avatarRating
+        rating = avatar.imageRating.toAvatarRating()
     }
 }

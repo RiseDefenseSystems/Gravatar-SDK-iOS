@@ -15,3 +15,18 @@ public enum Rating: String {
     /// May contain sexual imagery or extremely disturbing violence.
     case x
 }
+
+extension Rating {
+    package func toAvatarRating() -> AvatarRating {
+        switch self {
+        case .general:
+            .g
+        case .parentalGuidance:
+            .pg
+        case .restricted:
+            .r
+        case .x:
+            .x
+        }
+    }
+}
