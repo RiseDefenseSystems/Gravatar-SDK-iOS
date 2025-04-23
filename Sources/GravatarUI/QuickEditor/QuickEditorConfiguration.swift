@@ -13,19 +13,31 @@ public class QuickEditorConfiguration {
         self.interfaceStyle = interfaceStyle ?? .unspecified
         self.customImageEditorProvider = customImageEditorProvider
     }
-}
+} 
 
 /// Configuration which will be applied to the avatar picker screen.
-public struct AvatarPickerConfiguration: Sendable {
+public struct AvatarPickerConfiguration<ImageEditor: ImageEditorView>: Sendable {
     let contentLayout: AvatarPickerContentLayout
+    let customImageEditorProvider: ImageEditorBlock<ImageEditor>?
+    let avatarUpdatedHandler: (() -> Void)? = nil
 
-    public init(contentLayout: AvatarPickerContentLayout) {
+    public init(
+        contentLayout: AvatarPickerContentLayout,
+        customImageEditorProvider: ImageEditorBlock<ImageEditor>? = nil as NoCustomEditorBlock?
+
+    ) {
         self.contentLayout = contentLayout
+        self.customImageEditorProvider = customImageEditorProvider
     }
 
-    static let `default` = AvatarPickerConfiguration(
-        contentLayout: .horizontal(presentationStyle: .intrinsicHeight)
-    )
+    @MainActor
+    func model(with email: Email, token: String) -> AvatarPickerViewModel {
+        AvatarPickerViewModel(email: email, authToken: token)
+    }
+}
+
+public struct AboutEditorConfiguration: Sendable {
+
 }
 
 extension AvatarPickerConfiguration {

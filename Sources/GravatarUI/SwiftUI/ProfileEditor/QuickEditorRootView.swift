@@ -1,24 +1,41 @@
 import Gravatar
 import SwiftUI
 
-@available(iOS, deprecated: 16.0, renamed: "QuickEditorScope")
-public enum QuickEditorScopeType: Sendable {
-    case avatarPicker
-    case aboutInfoEditor
-}
+public struct QuickEditorScopeStruct {
+    let avatarPickerConfig: AvatarPickerConfiguration?
+    let aboutEditorConfig: AboutEditorConfiguration?
+    let scope: QuickEditorScopeType
 
-public enum QuickEditorScope: Sendable {
-    case avatarPicker(AvatarPickerConfiguration)
+    init(
+        scope: QuickEditorScopeType,
+        avatarPickerConfig: AvatarPickerConfiguration? = nil,
+        aboutEditorConfig: AboutEditorConfiguration? = nil
+    ) {
+        self.avatarPickerConfig = avatarPickerConfig
+        self.aboutEditorConfig = aboutEditorConfig
+        self.scope = scope
+    }
 
-    var scopeType: QuickEditorScopeType {
-        switch self {
-        case .avatarPicker:
-            .avatarPicker
-        }
+    public static func avatarPicker(
+        _ config: AvatarPickerConfiguration
+    ) -> Self {
+        .init(
+            scope: .avatarPicker,
+            avatarPickerConfig: config
+        )
+    }
+
+    public static func aboutEditor(
+        _ config: AboutEditorConfiguration
+    ) -> Self {
+        .init(
+            scope: .aboutInfoEditor,
+            aboutEditorConfig: config
+        )
     }
 }
 
-struct QuickEditor<ImageEditor: ImageEditorView>: View {
+struct QuickEditorRootView: View {
     fileprivate typealias Constants = QuickEditorConstants
 
     @Environment(\.oauthSession) private var oauthSession
@@ -29,38 +46,18 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     @State private var oauthError: OAuthError?
     @State private var safariURL: IdentifiableURL?
     @Binding private var isPresented: Bool
+
+    private let externalToken: String?
+    private var token: String? { externalToken ?? fetchedToken }
+    private let scope: QuickEditorScopeStruct
+    private let email: Email
+
     // Declare "@StateObject"s as private to prevent setting them from a
     // memberwise initializer, which can conflict with the storage
     // management that SwiftUI provides.
     // https://developer.apple.com/documentation/swiftui/stateobject
     @StateObject private var model: AvatarPickerViewModel
 
-    private let externalToken: String?
-    private var token: String? { externalToken ?? fetchedToken }
-    private let scope: QuickEditorScopeStruct
-    private let email: Email
-    private let customImageEditor: ImageEditorBlock<ImageEditor>?
-    private let contentLayoutProvider: AvatarPickerContentLayoutProviding?
-    private let avatarUpdatedHandler: (() -> Void)?
-
-    init(
-        email: Email,
-        scope: QuickEditorScopeType,
-        token: String? = nil,
-        isPresented: Binding<Bool>,
-        customImageEditor: ImageEditorBlock<ImageEditor>? = nil,
-        contentLayoutProvider: AvatarPickerContentLayoutProviding = AvatarPickerContentLayoutType.vertical,
-        avatarUpdatedHandler: (() -> Void)? = nil
-    ) {
-        self.email = email
-        self.scope = QuickEditorScopeStruct(scope: scope)
-        self._isPresented = isPresented
-        self.customImageEditor = customImageEditor
-        self.contentLayoutProvider = contentLayoutProvider
-        self.externalToken = token
-        self.avatarUpdatedHandler = avatarUpdatedHandler
-        self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: token))
-    }
 
     init(
         email: Email,
@@ -72,11 +69,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         self.email = email
         self._isPresented = isPresented
         self.externalToken = token
-        self.avatarUpdatedHandler = avatarUpdatedHandler
-        self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: token))
         self.scope = scope
-        self.customImageEditor = nil
-        self.contentLayoutProvider = nil
     }
 
     let authorizationFinishedNotification = NotificationCenter.default.publisher(for: .authorizationFinished)
@@ -101,33 +94,28 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             onAuthenticationFinished()
         }
         .onChange(of: token) { newValue in
-            if let newValue {
-                model.update(authToken: newValue)
-            }
+
         }
     }
 
     @MainActor
     @ViewBuilder
-    func editorView(with token: String) -> some View {
+    func editorView<ImageEditor: ImageEditorView>(with token: String) -> some View {
         switch scope.scope {
-        case .avatarPicker:
-            AvatarPickerView(
-                model: model,
-                isPresented: $isPresented,
-                contentLayoutProvider: scope.avatarPickerConfig!.contentLayout,
-                customImageEditor: customImageEditor,
-                tokenErrorHandler: externalToken != nil ? nil : {
-                    oauthSession.markSessionAsExpired(with: email)
-                    performAuthentication()
-                },
-                avatarUpdatedHandler: avatarUpdatedHandler
-            )
-        case .aboutInfoEditor:
-            Text("About info view")
-//            AboutInfoView(
-//                model: model
-//            )
+            case .avatarPicker:
+                AvatarPickerView<ImageEditor>(
+                    model: scope.avatarPickerConfig!.model(with: email, token: token),
+                    isPresented: $isPresented,
+                    contentLayoutProvider: scope.avatarPickerConfig!.contentLayout,
+                    customImageEditor: scope.avatarPickerConfig!.customImageEditorProvider,
+                    tokenErrorHandler: externalToken != nil ? nil : {
+                        oauthSession.markSessionAsExpired(with: email)
+                        performAuthentication()
+                    },
+                    avatarUpdatedHandler: scope.avatarPickerConfig!.avatarUpdatedHandler
+                )
+            case .aboutInfoEditor:
+                Text("About Editor")
         }
     }
 
@@ -208,23 +196,23 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     }
 }
 
-enum QuickEditorConstants {
+private enum QuickEditorViewConstants {
     enum ErrorView {
         static func title(for oauthError: OAuthError?) -> String? {
             switch oauthError {
-            case .loggedInWithWrongEmail:
-                Localized.WrongEmailError.title
-            default:
-                nil
+                case .loggedInWithWrongEmail:
+                    Localized.WrongEmailError.title
+                default:
+                    nil
             }
         }
 
         static func subtext(for oauthError: OAuthError?) -> String {
             switch oauthError {
-            case .loggedInWithWrongEmail(let email):
-                String(format: Localized.WrongEmailError.subtext, email)
-            default:
-                Localized.MissingToken.subtext
+                case .loggedInWithWrongEmail(let email):
+                    String(format: Localized.WrongEmailError.subtext, email)
+                default:
+                    Localized.MissingToken.subtext
             }
         }
 
