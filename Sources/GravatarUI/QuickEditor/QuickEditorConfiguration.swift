@@ -22,7 +22,6 @@ public struct AvatarPickerConfiguration: Sendable {
 
     public init(
         contentLayout: AvatarPickerContentLayout
-
     ) {
         self.contentLayout = contentLayout
     }

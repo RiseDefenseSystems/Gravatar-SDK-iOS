@@ -73,24 +73,6 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
         }
     )
 
-    @available(*, deprecated, renamed: "init(email:scope:configuration:token:onUpdate:onDismiss:)")
-    init(
-        email: Email,
-        scope: QuickEditorScopeOption,
-        configuration: QuickEditorConfiguration? = nil,
-        token: String? = nil,
-        onAvatarUpdated: (() -> Void)? = nil,
-        onDismiss: (() -> Void)? = nil
-    ) {
-        self.email = email
-        self.scope = scope
-        self.configuration = configuration ?? .default
-        self.token = token
-        self.onDismiss = onDismiss
-        self.onUpdate = { _ in onAvatarUpdated?() }
-        super.init(nibName: nil, bundle: nil)
-    }
-
     init(
         email: Email,
         scope: QuickEditorScopeOption,
@@ -204,10 +186,34 @@ public struct QuickEditorPresenter {
     ///   - scope: The scope in which the editor is used.
     ///   - configuration: Optional editor configuration. Defaults to `.default`.
     ///   - token: Optional authorization token. If none is provided, an OAuth screen will be presented for the user to authorise this session. See
+    /// <doc:GravatarOAuth> for more
+    @available(*, deprecated, renamed: "init(email:scopeOption:configuration:token:)", message: "The new scope parameter is of type `QuickEditorScopeOption`")
+    public init(
+        email: Email,
+        scope: QuickEditorScope,
+        configuration: QuickEditorConfiguration? = nil,
+        token: String? = nil
+    ) {
+        self.email = email
+        if case .avatarPicker(let config) = scope {
+            self.scope = QuickEditorScopeOption.avatarPicker(.init(contentLayout: config.contentLayout))
+        } else {
+            self.scope = QuickEditorScopeOption.avatarPicker(.init(contentLayout: .horizontal(presentationStyle: .intrinsicHeight)))
+        }
+        self.configuration = configuration ?? .default
+        self.token = token
+    }
+
+    /// Initializes the `QuickEditorPresenter` with the required parameters.
+    /// - Parameters:
+    ///   - email: User's email.
+    ///   - scopeOption: The scope in which the editor is used.
+    ///   - configuration: Optional editor configuration. Defaults to `.default`.
+    ///   - token: Optional authorization token. If none is provided, an OAuth screen will be presented for the user to authorise this session. See
     /// <doc:GravatarOAuth> for more info.
     public init(
         email: Email,
-        scope: QuickEditorScopeOption,
+        scopeOption scope: QuickEditorScopeOption,
         configuration: QuickEditorConfiguration? = nil,
         token: String? = nil
     ) {
@@ -238,7 +244,9 @@ public struct QuickEditorPresenter {
             scope: scope,
             configuration: configuration,
             token: token,
-            onAvatarUpdated: onAvatarUpdated,
+            onUpdate: { _ in
+                onAvatarUpdated?()
+            },
             onDismiss: onDismiss
         )
 

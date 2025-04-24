@@ -219,7 +219,7 @@ final class DemoQuickEditorViewController: UIViewController {
 
         let presenter = QuickEditorPresenter(
             email: Email(email),
-            scope: .avatarPicker(AvatarPickerConfiguration(contentLayout: selectedLayout.contentLayout)),
+            scopeOption: .avatarPicker(AvatarPickerConfiguration(contentLayout: selectedLayout.contentLayout)),
             configuration: .init(
                 interfaceStyle: customColorScheme,
                 customImageEditorProvider: imageEditorProvider
@@ -228,8 +228,15 @@ final class DemoQuickEditorViewController: UIViewController {
         )
         presenter.present(
             in: self,
-            onAvatarUpdated: { [weak self] in
-                self?.profileSummaryView.loadAvatar(with: .email(email), rating: .x, options: [.forceRefresh])
+            onUpdate: { [weak self] updateType in
+                switch updateType {
+                    case .avatarUpdate:
+                        self?.profileSummaryView.loadAvatar(with: .email(email), rating: .x, options: [.forceRefresh])
+                    case .aboutInfoUpdate:
+                        break
+                    default:
+                        break
+                }
             },
             onDismiss: { [weak self] in
                 self?.updateLogoutButton()
