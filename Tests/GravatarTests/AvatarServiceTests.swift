@@ -102,18 +102,16 @@ final class AvatarServiceTests: XCTestCase {
         XCTAssertEqual(callsCount, 1, "We should fetch from network only the first time")
     }
 
-    @MainActor
     func testAlternativeImageProcessor() async throws {
         let response = HTTPURLResponse.successResponse(with: TestData.urlFromEmail)
         let sessionMock = URLSessionMock(returnData: ImageHelper.testImageData, response: response)
         let service = avatarService(with: sessionMock)
-        let identifier = "Test"
-        let testProcessor = TestImageProcessor(identifier: identifier)
+        let testProcessor = TestImageProcessor(image: ImageHelper.testImage)
         let options = ImageDownloadOptions(processingMethod: .custom(processor: testProcessor))
 
         let result = try await service.fetch(with: .email(TestData.email), options: options)
 
-        XCTAssertTrue(result.image.accessibilityIdentifier == identifier)
+        XCTAssertTrue(result.image.pngData() == ImageHelper.testImage.pngData())
     }
 
     func testFetchAvatarWithDefaultAvatarOption() async throws {
