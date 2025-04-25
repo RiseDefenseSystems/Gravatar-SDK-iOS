@@ -1,3 +1,4 @@
+/// Represents a profile editing scope with configuration options for each scope.
 public struct QuickEditorScopeOption {
     let avatarPickerConfig: AvatarPickerConfiguration
     let aboutEditorConfig: AboutEditorConfiguration
@@ -13,6 +14,9 @@ public struct QuickEditorScopeOption {
         self.scope = scope
     }
 
+    /// Creates a `QuickEditorScopeOption` configured for the avatar picker scope.
+    /// - Parameter config: Configuration to apply to the avatar picker.
+    /// - Returns: A configured instance of `QuickEditorScopeOption` for the avatar picker scope.
     public static func avatarPicker(
         _ config: AvatarPickerConfiguration
     ) -> Self {
@@ -22,6 +26,9 @@ public struct QuickEditorScopeOption {
         )
     }
 
+    /// Creates a `QuickEditorScopeOption` configured for the about info editor scope.
+    /// - Parameter config: Configuration to apply to the about editor. Defaults to the standard configuration.
+    /// - Returns: A configured instance of `QuickEditorScopeOption` for the about info editor scope.
     public static func aboutEditor(
         _ config: AboutEditorConfiguration = .init()
     ) -> Self {

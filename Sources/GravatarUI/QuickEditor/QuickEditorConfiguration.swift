@@ -15,10 +15,9 @@ public class QuickEditorConfiguration {
     }
 }
 
-/// Configuration which will be applied to the avatar picker screen.
+/// Configuration which will be applied to the avatar picker.
 public struct AvatarPickerConfiguration: Sendable {
     let contentLayout: AvatarPickerContentLayout
-    let avatarUpdatedHandler: (() -> Void)? = nil
 
     public init(
         contentLayout: AvatarPickerContentLayout
@@ -27,8 +26,10 @@ public struct AvatarPickerConfiguration: Sendable {
     }
 }
 
+/// Configuration which will be applied to the About info editor.
 public struct AboutEditorConfiguration: Sendable {
     let presentationStyle: VerticalContentPresentationStyle
+
     public init(presentationStyle: VerticalContentPresentationStyle = .expandableMedium()) {
         self.presentationStyle = presentationStyle
     }
