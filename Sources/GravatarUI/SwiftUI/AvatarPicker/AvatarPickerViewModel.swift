@@ -219,10 +219,16 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchProfile() async {
-        guard let authToken else { return }
         do {
             isProfileLoading = true
-            let profile = try await profileService.fetchOwnProfile(token: authToken)
+            let profile: Profile
+            if let authToken {
+                profile = try await profileService.fetchOwnProfile(token: authToken)
+            }
+            else {
+                // Fallback to the public profile endpoint if there's no token.
+                profile = try await profileService.fetch(with: .email(email))
+            }
             profileResult = .success(profile)
             isProfileLoading = false
         } catch {
