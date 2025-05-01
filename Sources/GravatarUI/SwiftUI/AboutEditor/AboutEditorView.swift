@@ -67,6 +67,7 @@ struct AboutEditorView: View {
                 .multilineTextAlignment(.leading)
             if isLarge {
                 TextEditor(text: value)
+                    .font(.subheadline)
                     .multilineTextAlignment(.leading)
                     .padding(.DS.Padding.split)
                     .inputBorders(colorScheme: colorScheme)
@@ -76,13 +77,14 @@ struct AboutEditorView: View {
                     "",
                     text: value
                 )
+                .font(.subheadline)
                 .padding(.DS.Padding.split)
                 .inputBorders(colorScheme: colorScheme)
             }
 
             if let footerText {
                 Text(footerText)
-                    .font(.subheadline)
+                    .font(.footnote)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
             }
