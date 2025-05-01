@@ -52,21 +52,21 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
 
     private let externalToken: String?
     private var token: String? { externalToken ?? fetchedToken }
-    private let scope: QuickEditorScopeOption
+    private let scopeOption: QuickEditorScopeOption
     private let email: Email
     private let customImageEditor: ImageEditorBlock<ImageEditor>?
     private let updateHandler: ((QuickEditorUpdateType) -> Void)?
 
     init(
         email: Email,
-        scope: QuickEditorScopeOption,
+        scopeOption: QuickEditorScopeOption,
         token: String? = nil,
         isPresented: Binding<Bool>,
         customImageEditor: ImageEditorBlock<ImageEditor>? = nil,
         updateHandler: ((QuickEditorUpdateType) -> Void)? = nil
     ) {
         self.email = email
-        self.scope = scope
+        self.scopeOption = scopeOption
         self._isPresented = isPresented
         self.customImageEditor = customImageEditor
         self.externalToken = token
@@ -116,12 +116,12 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     @ViewBuilder
     func editorView(with token: String) -> some View {
         profileCardHeaderView()
-        switch scope.scope {
+        switch scopeOption.scope {
         case .avatarPicker:
             AvatarPickerView(
                 model: model,
                 isPresented: $isPresented,
-                contentLayoutProvider: scope.avatarPickerConfig.contentLayout,
+                contentLayoutProvider: scopeOption.avatarPickerConfig.contentLayout,
                 customImageEditor: customImageEditor,
                 tokenErrorHandler: externalToken != nil ? nil : {
                     oauthSession.markSessionAsExpired(with: email)
@@ -296,7 +296,7 @@ enum QuickEditorConstants {
 #Preview {
     QuickEditor<NoCustomEditor>(
         email: .init(""),
-        scope: .aboutEditor(.init()),
+        scopeOption: .aboutEditor(.init()),
         isPresented: .constant(true)
     )
 }

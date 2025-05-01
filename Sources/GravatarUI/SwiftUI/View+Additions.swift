@@ -46,7 +46,7 @@ extension View {
     ) -> some View {
         let editor = QuickEditor(
             email: .init(email),
-            scope: QuickEditorScopeOption.avatarPicker(),
+            scopeOption: QuickEditorScopeOption.avatarPicker(),
             token: authToken,
             isPresented: isPresented,
             customImageEditor: customImageEditor,
@@ -82,9 +82,10 @@ extension View {
     ) -> some View {
         switch scope {
         case .avatarPicker(let config):
+            let scopeOption = QuickEditorScopeOption.avatarPicker(.init(contentLayout: config.contentLayout))
             let editor = QuickEditor(
                 email: .init(email),
-                scope: QuickEditorScopeOption.avatarPicker(.init(contentLayout: config.contentLayout)),
+                scopeOption: scopeOption,
                 token: authToken,
                 isPresented: isPresented,
                 customImageEditor: customImageEditor,
@@ -96,7 +97,7 @@ extension View {
                 isPresented: isPresented,
                 onDismiss: onDismiss,
                 modalView: editor,
-                contentLayout: config.contentLayout
+                scopeOption: scopeOption
             ))
         }
     }
@@ -118,30 +119,24 @@ extension View {
         isPresented: Binding<Bool>,
         email: String,
         authToken: String? = nil,
-        scopeOption scope: QuickEditorScopeOption,
+        scopeOption: QuickEditorScopeOption,
         customImageEditor: ImageEditorBlock<some ImageEditorView>? = nil as NoCustomEditorBlock?,
         updateHandler: ((QuickEditorUpdateType) -> Void)? = nil,
         onDismiss: (() -> Void)? = nil
     ) -> some View {
         let editor = QuickEditor(
             email: .init(email),
-            scope: scope,
+            scopeOption: scopeOption,
             token: authToken,
             isPresented: isPresented,
             customImageEditor: customImageEditor,
             updateHandler: updateHandler
         )
-        let contentLayout = switch scope.scope {
-        case .avatarPicker: scope.avatarPickerConfig.contentLayout
-        case .aboutInfoEditor: AvatarPickerContentLayout.vertical(
-                presentationStyle: scope.aboutEditorConfig.presentationStyle
-            )
-        }
         modifier(QuickEditorModalPresentationModifier(
             isPresented: isPresented,
             onDismiss: onDismiss,
             modalView: editor,
-            contentLayout: contentLayout
+            scopeOption: scopeOption
         ))
     }
 
@@ -169,7 +164,7 @@ extension View {
     ) -> some View {
         let editor = QuickEditor(
             email: .init(email),
-            scope: scope.map(),
+            scopeOption: scope.map(),
             token: authToken,
             isPresented: isPresented,
             customImageEditor: customImageEditor,

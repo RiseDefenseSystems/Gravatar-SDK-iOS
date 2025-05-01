@@ -16,6 +16,15 @@ public enum VerticalContentPresentationStyle: Sendable, Equatable {
         initialFraction: CGFloat = VerticalContentPresentationStyle.expandableMediumInitialFraction,
         prioritizeScrollOverResize: Bool = false
     )
+
+    var prioritizeScrollOverResize: Bool {
+        switch self {
+        case .expandableMedium(_, let prioritizeScrollOverResize):
+            prioritizeScrollOverResize
+        default:
+            false
+        }
+    }
 }
 
 /// Presentation styles supported for the horizontially scrolling content.
@@ -51,8 +60,8 @@ public enum AvatarPickerContentLayout: AvatarPickerContentLayoutProviding, Equat
 
     var prioritizeScrollOverResize: Bool {
         switch self {
-        case .vertical(.expandableMedium(_, let prioritizeScrollOverResize)):
-            prioritizeScrollOverResize
+        case .vertical(let presentationStyle):
+            presentationStyle.prioritizeScrollOverResize
         default:
             false
         }
@@ -69,21 +78,6 @@ public enum AvatarPickerContentLayout: AvatarPickerContentLayoutProviding, Equat
             }
         case .horizontal:
             .fraction(VerticalContentPresentationStyle.expandableMediumInitialFraction)
-        }
-    }
-}
-
-extension VerticalContentPresentationStyle {
-    @available(iOS 16.0, *)
-    var detents: [QEDetent] {
-        switch self {
-        case .large:
-            [.large]
-        case .expandableMedium(initialFraction: let initialFraction, prioritizeScrollOverResize: _):
-            [
-                .fraction(initialFraction),
-                .large,
-            ]
         }
     }
 }
