@@ -69,11 +69,7 @@ struct AboutEditorView: View {
                 TextEditor(text: value)
                     .multilineTextAlignment(.leading)
                     .padding(.DS.Padding.split)
-                    .shape(
-                        RoundedRectangle(cornerRadius: 2),
-                        borderColor: Color(uiColor: .label.withAlphaComponent(0.15)),
-                        borderWidth: 1
-                    )
+                    .inputBorders(colorScheme: colorScheme)
                     .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
             } else {
                 TextField(
@@ -81,11 +77,7 @@ struct AboutEditorView: View {
                     text: value
                 )
                 .padding(.DS.Padding.split)
-                .shape(
-                    RoundedRectangle(cornerRadius: 2),
-                    borderColor: Color(uiColor: .label.withAlphaComponent(0.15)),
-                    borderWidth: 1
-                )
+                .inputBorders(colorScheme: colorScheme)
             }
 
             if let footerText {
@@ -97,7 +89,7 @@ struct AboutEditorView: View {
         }
         .frame(maxWidth: .infinity)
     }
-    
+
     private enum Localized {
         static let aboutMeFooterText = SDKLocalizedString(
             "Profile.AboutInfoField.aboutMe.footer",
@@ -112,7 +104,7 @@ struct AboutEditorView: View {
     }
 }
 
-fileprivate class AboutInputFields: ObservableObject {
+private class AboutInputFields: ObservableObject {
     @Published var displayName: String = ""
     @Published var aboutMe: String = ""
     @Published var pronunciation: String = ""
@@ -136,6 +128,16 @@ struct UpdatedFields {
     var pronunciation: String? = nil
     var pronouns: String? = nil
     var location: String? = nil
+}
+
+extension View {
+    fileprivate func inputBorders(colorScheme: ColorScheme) -> some View {
+        self.shape(
+            RoundedRectangle(cornerRadius: 2),
+            borderColor: Color(uiColor: .label).opacity(colorScheme == .dark ? 0.30 : 0.15),
+            borderWidth: 1
+        )
+    }
 }
 
 #Preview {
