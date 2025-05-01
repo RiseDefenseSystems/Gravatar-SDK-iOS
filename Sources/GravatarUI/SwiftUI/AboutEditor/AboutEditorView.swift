@@ -19,7 +19,7 @@ struct AboutEditorView: View {
     }
 
     @ViewBuilder
-    func personalInfoContent() -> some View {
+    private func personalInfoContent() -> some View {
         if fields.contains(.displayName) {
             inputField(
                 for: AboutInfoField.displayName.localizedName(),
@@ -29,6 +29,7 @@ struct AboutEditorView: View {
         if fields.contains(.aboutMe) {
             inputField(
                 for: AboutInfoField.aboutMe.localizedName(),
+                footerText: Localized.aboutMeFooterText,
                 value: $inputFields.aboutMe,
                 isLarge: true
             )
@@ -36,6 +37,7 @@ struct AboutEditorView: View {
         if fields.contains(.pronunciation) {
             inputField(
                 for: AboutInfoField.pronunciation.localizedName(),
+                footerText: Localized.pronunciationFooterText,
                 value: $inputFields.pronunciation
             )
         }
@@ -66,7 +68,6 @@ struct AboutEditorView: View {
             if isLarge {
                 TextEditor(text: value)
                     .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity)
                     .padding(.DS.Padding.split)
                     .shape(
                         RoundedRectangle(cornerRadius: 2),
@@ -79,8 +80,6 @@ struct AboutEditorView: View {
                     "",
                     text: value
                 )
-                .lineLimit(isLarge ? 4 : 1)
-                .frame(maxWidth: .infinity)
                 .padding(.DS.Padding.split)
                 .shape(
                     RoundedRectangle(cornerRadius: 2),
@@ -93,9 +92,23 @@ struct AboutEditorView: View {
                 Text(footerText)
                     .font(.subheadline)
                     .multilineTextAlignment(.leading)
+                    .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
             }
         }
         .frame(maxWidth: .infinity)
+    }
+    
+    private enum Localized {
+        static let aboutMeFooterText = SDKLocalizedString(
+            "Profile.AboutInfoField.aboutMe.footer",
+            value: "Brief description for your profile.",
+            comment: "Description for the 'About me' field in the profile editing screen."
+        )
+        static let pronunciationFooterText = SDKLocalizedString(
+            "Profile.AboutInfoField.pronunciation.footer",
+            value: "Let them know how your name sounds like.",
+            comment: "Description for the 'Pronunciation' field in the profile editing screen."
+        )
     }
 }
 
