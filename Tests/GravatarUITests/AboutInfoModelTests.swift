@@ -1,10 +1,10 @@
-import Testing
 @testable import GravatarUI
+import Testing
 
 @Suite
 struct AboutInfoModelTests {
-
-    @Test func testCreateUpdateProfileRequestForAllFields() async throws {
+    @Test
+    func testCreateUpdateProfileRequestForAllFields() async throws {
         let model = aboutInfoModel()
         let request = model.updateProfileRequest(for: AboutInfoField.all)
         #expect(request.displayName == model.displayName)
@@ -30,12 +30,14 @@ struct AboutInfoModelTests {
     }
 
     private func aboutInfoModel() -> AboutInfoModel {
-        return AboutInfoModel(displayName: "displayName",
-                              aboutMe: "aboutMe",
-                              pronunciation: "pronunciation",
-                              pronouns: "pronouns",
-                              location: "location",
-                              jobTitle: "jobTitle",
-                              company: "company")
+        AboutInfoModel(
+            displayName: "displayName",
+            aboutMe: "aboutMe",
+            pronunciation: "pronunciation",
+            pronouns: "pronouns",
+            location: "location",
+            jobTitle: "jobTitle",
+            company: "company"
+        )
     }
 }

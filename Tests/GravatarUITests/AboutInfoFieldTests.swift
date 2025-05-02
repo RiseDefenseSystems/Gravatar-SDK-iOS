@@ -3,7 +3,6 @@ import Testing
 
 @Suite
 struct AboutInfoFieldTests {
-    
     @Test
     func testPersonalFields() async throws {
         let fields: AboutInfoField = [
@@ -16,17 +15,23 @@ struct AboutInfoFieldTests {
         #expect(AboutInfoField.personalFields.contains(fields), "`AboutInfoField.personalFields` convenience property must contain the necessary fields")
         #expect(AboutInfoField.personalFields.symmetricDifference(fields).isEmpty, "`AboutInfoField.personalFields` convenience must not have unwanted fields")
     }
-    
+
     @Test
     func testProfessionalFields() async throws {
         let fields: AboutInfoField = [
             .jobTitle,
             .company,
         ]
-        #expect(AboutInfoField.professionalFields.contains(fields), "`AboutInfoField.professionalFields` convenience property must contain the necessary fields")
-        #expect(AboutInfoField.professionalFields.symmetricDifference(fields).isEmpty, "`AboutInfoField.professionalFields` convenience must not have unwanted fields")
+        #expect(
+            AboutInfoField.professionalFields.contains(fields),
+            "`AboutInfoField.professionalFields` convenience property must contain the necessary fields"
+        )
+        #expect(
+            AboutInfoField.professionalFields.symmetricDifference(fields).isEmpty,
+            "`AboutInfoField.professionalFields` convenience must not have unwanted fields"
+        )
     }
-    
+
     @Test
     func testAllFields() async throws {
         let fields: AboutInfoField = [
