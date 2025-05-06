@@ -121,7 +121,8 @@ struct AboutEditorView: View {
                 TextEditor(text: value)
                     .font(Constants.primaryFont)
                     .multilineTextAlignment(.leading)
-                    .padding(.DS.Padding.split)
+                    .padding(.horizontal, .DS.Padding.single)
+                    .padding(.vertical, 0)
                     .inputBorders(colorScheme: colorScheme)
                     .frame(height: dynamicTypeSize >= .accessibility1 ? 150 : 120)
             } else {
