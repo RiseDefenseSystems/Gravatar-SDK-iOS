@@ -134,7 +134,10 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         case .aboutInfoEditor:
             AboutEditorView(
                 model: model,
-                fields: scopeOption.aboutEditorConfig.fields
+                fields: scopeOption.aboutEditorConfig.fields,
+                aboutUpdateHandler: {
+                    updateHandler?(.aboutInfoUpdate)
+                }
             )
         }
     }

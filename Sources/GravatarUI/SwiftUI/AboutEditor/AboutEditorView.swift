@@ -11,6 +11,7 @@ struct AboutEditorView: View {
     let fields: AboutInfoField
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    var aboutUpdateHandler: (() -> Void)?
 
     var body: some View {
         VStack {
@@ -38,7 +39,9 @@ struct AboutEditorView: View {
     private func saveButton() -> some View {
         Button {
             Task {
-                await self.model.saveAboutInfo(for: fields)
+                if await self.model.saveAboutInfo(for: fields) {
+                    aboutUpdateHandler?()
+                }
             }
         } label: {
             CTAButtonView(Localized.saveButtonTitle)
