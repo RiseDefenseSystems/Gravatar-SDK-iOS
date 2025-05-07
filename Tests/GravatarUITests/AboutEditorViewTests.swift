@@ -8,7 +8,7 @@ import Testing
 struct AboutEditorViewTests {
     @MainActor
     @Test
-    func testAboutEditorViewAllFieldsFullHeight() async throws {
+    func testAboutEditorViewAllFieldsIntrinsicHeight() async throws {
         let testModel = testModel()
         await testModel.refresh()
 
@@ -30,7 +30,7 @@ struct AboutEditorViewTests {
 
     @MainActor
     @Test
-    func testAboutEditorViewProfessionalFieldsFullHeight() async throws {
+    func testAboutEditorViewProfessionalFieldsIntrinsicHeight() async throws {
         let testModel = testModel()
         await testModel.refresh()
 
@@ -52,7 +52,7 @@ struct AboutEditorViewTests {
 
     @MainActor
     @Test
-    func testAboutEditorViewPersonalFieldsFullHeight() async throws {
+    func testAboutEditorViewPersonalFieldsIntrinsicHeight() async throws {
         let testModel = testModel()
         await testModel.refresh()
 
@@ -74,7 +74,7 @@ struct AboutEditorViewTests {
 
     @MainActor
     @Test
-    func testAboutEditorViewAllFieldsLimitedHeight() async throws {
+    func testAboutEditorViewAllFieldsFixedHeight() async throws {
         let testModel = testModel()
         await testModel.refresh()
         let viewImageConfig: ViewImageConfig = .iPhoneSe
@@ -82,6 +82,27 @@ struct AboutEditorViewTests {
         let view = AboutEditorView(
             model: testModel,
             fields: .all
+        )
+
+        assertSnapshots(
+            of: view,
+            as: [
+                .testStrategy(userInterfaceStyle: .light, layout: .device(config: viewImageConfig)),
+                .testStrategy(userInterfaceStyle: .dark, layout: .device(config: viewImageConfig)),
+            ]
+        )
+    }
+
+    @MainActor
+    @Test
+    func testAboutEditorViewOneFieldFixedHeight() async throws {
+        let testModel = testModel()
+        await testModel.refresh()
+        let viewImageConfig: ViewImageConfig = .iPhoneSe
+
+        let view = AboutEditorView(
+            model: testModel,
+            fields: .displayName
         )
 
         assertSnapshots(
