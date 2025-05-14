@@ -39,11 +39,6 @@ public struct QuickEditorUpdateType: Sendable, Equatable {
 }
 
 struct QuickEditor<ImageEditor: ImageEditorView>: View {
-    enum MultipleScopeMode {
-        case avatarPicker
-        case aboutEditor
-    }
-
     fileprivate typealias Constants = QuickEditorConstants
 
     @Environment(\.oauthSession) private var oauthSession
@@ -58,7 +53,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
 
     /// If the QE is open with the scope switch option, this property will track which scope is currently being presented.
     /// It's nil when a single scope option was selected.
-    @State private var multipleEditorMode: MultipleScopeMode? = nil
+    @State private var multipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode?
 
     @Binding private var isPresented: Bool
     // Declare "@StateObject"s as private to prevent setting them from a
@@ -93,8 +88,8 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         self.updateHandler = updateHandler
         self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: token))
         self.unsavedChangesAlertPresentationModel = unsavedChangesAlertPresentationModel
-        if scopeOption.isAvatarPickerAndAboutInfoEditor {
-            _multipleEditorMode = State(initialValue: .avatarPicker)
+        if let mode = scopeOption.initialMultipleEditorMode {
+            _multipleEditorMode = State(initialValue: mode)
         }
     }
 
