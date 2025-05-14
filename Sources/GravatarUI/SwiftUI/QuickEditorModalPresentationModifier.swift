@@ -24,6 +24,7 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
     @State private var presentationDetents: Set<PresentationDetent>
     @State private var prioritizeScrollOverResize: Bool = false
     @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @State private var dismissAttempt: Bool = false
 
     let onDismiss: (() -> Void)?
     let modalView: ModalView
@@ -82,6 +83,12 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
                     }
                     .presentationDetents(presentationDetents)
                     .presentationContentInteraction(shouldPrioritizeScrolling: prioritizeScrollOverResize)
+                    .dismissAttemptDetecting(
+                        dismissAttempt: $dismissAttempt,
+                        isPresented: $isPresented,
+                        isLargeDetentOnly: presentationDetents == [.large]
+                    )
+                    .environment(\.dismissAttempt, dismissAttempt)
             }
     }
 
@@ -93,6 +100,10 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
         ).map()
         self.prioritizeScrollOverResize = shouldPrioritizeScrollOverResize
     }
+}
+
+extension EnvironmentValues {
+    @Entry var dismissAttempt: Bool = false
 }
 
 @MainActor
