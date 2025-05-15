@@ -196,7 +196,7 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
     private var _innerVerticalSizeClass: UserInterfaceSizeClass? = nil {
         didSet { onVerticalSizeClassChange(_innerVerticalSizeClass) }
     }
-    
+
     private var _innerMultipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode? = nil {
         didSet { onMultipleEditorModeChange(_innerMultipleEditorMode) }
     }
